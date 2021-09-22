@@ -2,9 +2,11 @@ package reqdebug
 
 import (
 	"embed"
+	"github.com/gonyyi/common"
 	"html/template"
 	"net/http"
 	"net/http/httputil"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -12,9 +14,10 @@ import (
 const VERSION = "ReqDebug v1.0.1"
 
 var (
-	respTmpl    *template.Template
-	lastData    Data
-	serviceName string
+	respTmpl      *template.Template
+	lastData      []Data
+	lastDataIndex common.RollingIndex
+	serviceName   string
 	//go:embed template.html
 	tmpl embed.FS
 )
@@ -44,12 +47,38 @@ type Data struct {
 	DebugURL       string
 }
 
-func debugHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	lastData.Mode = "::debug"
-	lastData.DebugURL = ""
-	respTmpl.Execute(w, lastData)
+func debugHandler(idx int) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		currListSize := len(lastDataIndex.List()) // current list size.. it can be 0 to reqsKeep
+		if idx+1 > len(lastData) {
+			respTmpl.Execute(w, Data{
+				Mode: "::debug",
+				ServiceName:    serviceName,
+				ServiceVersion: VERSION,
+				Error: "Index outside the range",
+			})
+			return
+		}
+		if idx+1 > currListSize || currListSize == 0 {
+			respTmpl.Execute(w, Data{
+				Mode: "::debug",
+				ServiceName:    serviceName,
+				ServiceVersion: VERSION,
+				Error: "No data",
+			})
+			return
+		}
+
+		{
+			tmpData := lastData[lastDataIndex.Curr()-idx]
+			tmpData.Mode = "::debug"
+			tmpData.DebugURL = ""
+			respTmpl.Execute(w, tmpData)
+		}
+	}
 }
 
 func newHandler(name string) http.HandlerFunc {
@@ -57,7 +86,8 @@ func newHandler(name string) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
-		lastData = Data{
+		lastDataIndex = lastDataIndex.Next()
+		lastData[lastDataIndex.Curr()] = Data{
 			ServiceName:    serviceName,
 			ServiceVersion: VERSION,
 			Mode:           "",
@@ -75,51 +105,65 @@ func newHandler(name string) http.HandlerFunc {
 			if r.TLS == nil {
 				scheme = "http"
 			}
-			lastData.DebugURL = scheme + "://" + r.Host + r.URL.Path + "?reqdebug=1"
+			lastData[lastDataIndex.Curr()].DebugURL = scheme + "://" + r.Host + r.URL.Path + "?reqdebug="
 		}
 
 		reqOut, err := httputil.DumpRequest(r, true)
 		if err != nil {
-			lastData.Error = err.Error()
+			lastData[lastDataIndex.Curr()].Error = err.Error()
 		} else {
-			lastData.Error = "n/a"
+			lastData[lastDataIndex.Curr()].Error = ""
 		}
-		lastData.Request = string(reqOut)
-		respTmpl.Execute(w, lastData)
+		lastData[lastDataIndex.Curr()].Request = string(reqOut)
+		if err := respTmpl.Execute(w, lastData[lastDataIndex.Curr()]); err != nil {
+			println(err.Error())
+		}
 	}
 }
 
-func Run(addr string, name string, ignoreURI []string) (err error) {
+func Run(addr string, name string, reqsKeep int, ignoreURIs []string, customHandler map[string]http.HandlerFunc) (err error) {
 	serviceName = name
-	lastData.ServiceName = name
-	lastData.ServiceVersion = VERSION
+	lastData = make([]Data, reqsKeep)
+	lastDataIndex = common.NewRollingIndex(reqsKeep)
+
+
+	// IGNORE SOME URIs
 	ignores := make(map[string]struct{})
-	for _, v := range ignoreURI {
+	for _, v := range ignoreURIs {
 		ignores[v] = struct{}{}
 	}
 
+	// LOAD TEMPLATE
 	respTmpl, err = template.ParseFS(tmpl, "template.html")
 	if err != nil {
 		return err
 	}
-
 	if !strings.Contains(addr, ":") {
 		return ERR_BAD_ADDRESS
 	}
 
-	handlers := make(map[string]http.HandlerFunc)
-	handlers["int.gonyyi.com"] = newHandler("Internal network")
-	handlers["play.gonyyi.com"] = newHandler("Playground")
-	handlers["test.play.gonyyi.com"] = newHandler("Playground Test")
+	// HANDLERS
+	if customHandler == nil {
+		customHandler = make(map[string]http.HandlerFunc)
+	}
 	defaultHandler := newHandler("Default")
 
 	router := func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("reqdebug") == "1" {
-			debugHandler(w, r)
+		if idx := r.URL.Query().Get("reqdebug"); idx != "" {
+			intIdx, _ := strconv.Atoi(idx)
+
+			debugHandler(intIdx)(w,r)
+
+			// if dstIdx := (len(idxList) - 1) - intIdx; dstIdx > -1 {
+			// 	debugHandler(idxList[dstIdx])(w, r)
+			// } else {
+			// 	debugHandler(-1)(w, r)
+			// }
+
 		} else if _, ok := ignores[r.URL.RequestURI()]; !ok {
 			// don't do anything for ignore URI lists
 			url := strings.SplitN(r.Host, ":", 2)[0]
-			if h, ok := handlers[url]; ok && h != nil {
+			if h, ok := customHandler[url]; ok && h != nil {
 				h(w, r)
 			} else {
 				defaultHandler(w, r)
