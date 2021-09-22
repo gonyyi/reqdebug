@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const VERSION = "ReqDebug v1.0.0"
+const VERSION = "ReqDebug v1.0.1"
 
 var (
 	respTmpl    *template.Template
@@ -36,16 +36,19 @@ type Data struct {
 	Time           string
 	Name           string
 	Host           string
+	Path           string
 	URI            string
 	IP             string
 	Error          string
 	Request        string
+	DebugURL       string
 }
 
 func debugHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	lastData.Mode = "::debug"
+	lastData.DebugURL = ""
 	respTmpl.Execute(w, lastData)
 }
 
@@ -57,13 +60,24 @@ func newHandler(name string) http.HandlerFunc {
 		lastData = Data{
 			ServiceName:    serviceName,
 			ServiceVersion: VERSION,
-			Mode: "",
+			Mode:           "",
 			Time:           time.Now().Format("2006/01/02 15:04:05.000"),
 			Name:           name,
 			Host:           r.Host,
-			URI:            r.URL.String(),
+			Path:           r.URL.Path,
+			URI:            r.RequestURI,
 			IP:             r.RemoteAddr,
+			DebugURL:       "",
 		}
+
+		{
+			scheme := "https"
+			if r.TLS == nil {
+				scheme = "http"
+			}
+			lastData.DebugURL = scheme + "://" + r.Host + r.URL.Path + "?reqdebug=1"
+		}
+
 		reqOut, err := httputil.DumpRequest(r, true)
 		if err != nil {
 			lastData.Error = err.Error()
@@ -75,10 +89,14 @@ func newHandler(name string) http.HandlerFunc {
 	}
 }
 
-func Run(addr string, name string) (err error) {
+func Run(addr string, name string, ignoreURI []string) (err error) {
 	serviceName = name
 	lastData.ServiceName = name
 	lastData.ServiceVersion = VERSION
+	ignores := make(map[string]struct{})
+	for _, v := range ignoreURI {
+		ignores[v] = struct{}{}
+	}
 
 	respTmpl, err = template.ParseFS(tmpl, "template.html")
 	if err != nil {
@@ -96,9 +114,10 @@ func Run(addr string, name string) (err error) {
 	defaultHandler := newHandler("Default")
 
 	router := func(w http.ResponseWriter, r *http.Request) {
-		if r.RequestURI == "/debug" {
+		if r.URL.Query().Get("reqdebug") == "1" {
 			debugHandler(w, r)
-		} else {
+		} else if _, ok := ignores[r.URL.RequestURI()]; !ok {
+			// don't do anything for ignore URI lists
 			url := strings.SplitN(r.Host, ":", 2)[0]
 			if h, ok := handlers[url]; ok && h != nil {
 				h(w, r)
