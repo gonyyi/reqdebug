@@ -22,15 +22,17 @@
     <meta property="og:site_name" content="{{.ServiceName}}"/>
 </head>
 <body>
-<h1><a href="./">{{.ServiceName}}</a><i>{{.Mode}}</i></h1>
-<small>{{.ServiceVersion}}</small>
-
+<h1>{{.ServiceName}}<i>{{.Mode}}</i></h1>
+{{ if .DebugURL }}
+<small>See <a href="{{.DebugURL}}">debug info</a></small>
+{{ end }}
 <hr/>
 <h2>Summary</h2>
 <ul>
     <li><div>Time: <i>{{.Time}}</i></div></li>
     <li><div>Name: <i>{{.Name}}</i></div></li>
     <li><div>Host: <i>{{.Host}}</i></div></li>
+    <li><div>Path: <i>{{.Path}}</i></div></li>
     <li><div>URI: <i>{{.URI}}</i></div></li>
     <li><div>RemoteIP: <i>{{.IP}}</i></div></li>
 </ul>
@@ -45,7 +47,8 @@
 <!-- COPYRIGHT -->
 <hr/>
 <footer>
-    Powered by <a href="https://github.com/gonyyi/reqdebug">{{.ServiceVersion}}</a>
+    Powered by <a href="https://github.com/gonyyi/reqdebug">{{.ServiceVersion}}</a>.
+    See <a href="https://gonyyi.com/copyright">copyright info</a>
 </footer>
 </body>
 </html>
