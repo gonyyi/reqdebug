@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gonyyi/slackbi/cmd/reqdebug"
+	"github.com/gonyyi/reqdebug"
 )
 
 func main() {
