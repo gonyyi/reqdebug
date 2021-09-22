@@ -5,7 +5,10 @@ import (
 )
 
 func main() {
-	err := reqdebug.Run(":10173", "http test", []string{"/favicon.ico"})
+	ignore := []string{
+		"/favicon.ico",
+	}
+	err := reqdebug.Run(":10174", "test", 5, ignore, nil)
 	if err != nil {
 		println(err.Error())
 	}
