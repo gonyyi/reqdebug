@@ -40,7 +40,9 @@
 <hr/>
 <h2>Request</h2>
 <ul>
+    {{ if .Error }}
     <li><div>Error: <i>{{.Error}}</i></div></li>
+    {{ end }}
     <li><pre>{{.Request}}</pre></li>
 </ul>
 
