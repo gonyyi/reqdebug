@@ -105,7 +105,7 @@ func newHandler(name string) http.HandlerFunc {
 			if r.TLS == nil {
 				scheme = "http"
 			}
-			lastData[lastDataIndex.Curr()].DebugURL = scheme + "://" + r.Host + r.URL.Path + "?reqdebug="
+			lastData[lastDataIndex.Curr()].DebugURL = scheme + "://" + r.Host + r.URL.Path + "?reqdebug=0"
 		}
 
 		reqOut, err := httputil.DumpRequest(r, true)
