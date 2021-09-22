@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	err := reqdebug.Run(":10173", "gon/y/yi")
+	err := reqdebug.Run(":10173", "http test", []string{"/favicon.ico"})
 	if err != nil {
 		println(err.Error())
 	}
