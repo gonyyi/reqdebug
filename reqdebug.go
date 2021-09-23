@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const VERSION = "ReqDebug v1.0.1"
+const VERSION = "ReqDebug v1.1.0"
 
 var (
 	respTmpl      *template.Template
