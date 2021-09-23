@@ -1,4 +1,4 @@
-module github.com/gonyyi/reqdebug
+module github.com/gonyyi/reqtest
 
 go 1.16
 
