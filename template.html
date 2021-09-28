@@ -4,16 +4,12 @@
 <head>
     <title>{{.ServiceName}}</title>
     <style>
-        /* (c) 2016-2021 gon/y/yi <https://gonyyi.com/copyright>. GONYYI base.css */
-        html{padding:0;margin:5px;font-size:5px;background:#fff}body{margin:3rem;max-width:160rem;font-family:Georgia,Times,"Times New Roman",serif,Helvetica,Arial,sans-serif;font-size:4rem;color:#4a4a4a;word-wrap:break-word;hyphens:auto;text-transform:lowercase}footer{font-size:3rem;margin-bottom:6rem}footer div{font-size:3rem;color:#fff}h1{margin:3rem 0 1rem 0;font-size:8rem}h1 a{color:#4a4a4a}h1 a:hover{background:#eee;border-radius:2rem 0}h1 i,h2 i,h3 i{padding-left:1rem;color:#aaa;font-style:normal;font-weight:lighter}h2{margin:3rem 0 1rem 0;font-size:6rem;font-weight:lighter}hr{margin-top:3rem;height:.2rem;border-width:0;background-color:#ccc}p,ul{margin:0 0 2rem 4rem;padding:0 2rem;border-left:1rem solid #dadada;font-size:3rem}ul li{list-style-type:none}ul li i{padding-left:1rem;color:#7e7e7e}ul li a,ul li div{display:block;outline:0;padding:1rem}small{display:block;margin-bottom:3rem;font-size:3rem;color:#7e7e7e}p small,ul small{padding-left:5rem;margin-bottom:0;font-style:italic;color:#9e9e9e}a{text-decoration:none;color:#0080ff}a:focus,a:hover{background:#eee;border-radius:2rem}a:active,a:focus{color:#ff511d;outline:0}a.bad{color:red}.init,.init *,.init ::after,.init ::before,.init :active,.init :focus,.init :hover{all:initial}
-        ul li div i {text-transform:none}
-        ul li pre {
-            background-color: #dadada;
-            border-radius: 3rem;
-            padding: 3rem;
-            white-space: pre-wrap;
-            font-size: 2rem;
-        }
+        /* (c) Gon Y. Yi 2016-2021 <https://gonyyi.com/copyright> */ html{font-size:5px;padding:0;margin:0}body{background:#fff;padding:0;margin:0;font-family:Georgia,Times,"Times New Roman",serif,Helvetica,Arial,sans-serif;font-size:4rem;color:#333;word-wrap:break-word;hyphens:auto;text-transform:lowercase;}footer,header,section{margin:0 3rem;max-width:200rem}header{padding:4rem 0 2rem 0;border-bottom:1px solid #ccc;font-size:3rem}header>h1>a{color:#333}section{padding:1rem 0 2rem 0;text-transform:lowercase}section>div,section>p,section>ul{margin:1rem 0 0 4rem;padding:0 0 0 2rem;border-left:1rem solid #ddd;font-size:4rem}section>p{padding-bottom:1rem;padding-top:1rem}section>ul>li{list-style-type:none;padding:1rem 0}footer{padding:2rem 0 4rem 0;border-top:1px solid #ccc;font-size:3rem;margin-bottom:3rem;padding-bottom:3rem}footer>div{font-size:2rem;margin-top:1rem;color:transparent}footer>ul,header>ul{display:inline-block;list-style-type:none;margin:1rem 0;padding:0;font-size:3rem}ul li{color:#888}footer>ul>li,header>ul>li{display:inline-block}header>ul>li:before{content:" / "}footer>ul>li:before{content:" | "}small{padding:0;margin:0;display:block;font-size:3rem;color:#888}div>small,p>small,ul>small{padding-left:5rem}a{text-decoration:none;color:#06f;padding:0;outline:0}a:active{color:#f51}a:focus,a:hover{color:#f60}a.bad{text-decoration:line-through}a i{color:#888;padding-left:1rem;font-size:3rem;}a>div>small{display:inline;font-size:inherit;padding-left:2rem}h1,h2,h3{margin:0;padding:1rem 0}h1{font-size:8rem}h2{font-size:7rem;font-weight:lighter}h3{font-size:6rem;font-weight:lighter}hr{margin-top:3rem;height:0;border-width:0;border-top:1px solid #999}i{color:#888}pre{display:block;background-color:#eee;border-radius:1rem;padding:1rem 1rem;font-size:3rem;color:#555;white-space:pre-wrap}button,input{border-radius:1rem;border:.5rem solid #69e;font-size:3rem;padding:1rem;margin:1rem 0;outline:0}input{background-color:#fff;color:#69e}button{background-color:#69e;color:#fff}input:hover{border-color:#69e;background-color:#69e;color:#fff}button:hover{border-color:#17f;background-color:#17f;color:#fff}button:active,button:focus,input:active,input:focus{border-color:#17f;background-color:#17f;color:#fff;caret-color:#fff;}input:active::placeholder,input:focus::placeholder,input:hover::placeholder{color:#fff;opacity:1}:-ms-input-placeholder{color:#69e}::-ms-input-placeholder{color:#69e}::placeholder{color:#69e;opacity:1}label{font-size:3rem}.width20{width:20rem}.width40{width:40rem}.width100{width:100rem}.altFont{font-family:sans-serif}.indent{margin-left:7rem}.noCasing{text-transform:none}.upper{text-transform:uppercase}.lower{text-transform:lowercase}.init,.init *,.init ::after,.init ::before,.init :active,.init :focus,.init :hover{all:initial}
+        .fixedFont{font-family:monospace}
+        ul.pipeList, ul.slashList {display: inline-block; list-style-type: none; margin: 1rem 0; padding: 0; font-size: 3rem;}
+        ul.pipeList>li, ul.slashList>li {display: inline-block;}
+        ul.pipeList>li:before {content:" | ";}
+        ul.slashList>li:before {content:" / ";}
     </style>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
@@ -22,33 +18,54 @@
     <meta property="og:site_name" content="{{.ServiceName}}"/>
 </head>
 <body>
-<h1>{{.ServiceName}}<i>{{.Mode}}</i></h1>
-<hr/>
-<h2>Summary</h2>
-<ul>
-    <li><div>Time: <i>{{.Time}}</i></div></li>
-    <li><div>Name: <i>{{.Name}}</i></div></li>
-    <li><div>Host: <i>{{.Host}}</i></div></li>
-    <li><div>Path: <i>{{.Path}}</i></div></li>
-    <li><div>URI: <i>{{.URI}}</i></div></li>
-    <li><div>RemoteIP: <i>{{.IP}}</i></div></li>
-</ul>
+<header>
+    <h1>{{.ServiceName}}<i>{{.Mode}}</i></h1>
+    {{if .Mode}}
+    <small>
+        Requests
+        <ul class="pipeList">
+            {{range .ReqList}}
+                {{if eq . "0"}}
+            <li><a href="/?test={{.}}">Lastest</a></li>
+                {{else}}
+            <li><a href="/?test={{.}}">-{{.}}</a></li>
+                {{end}}
+            {{end}}
+        </ul>
+    </small>
+    {{end}}
+</header>
 
-<hr/>
-<h2>Raw Request</h2>
-<ul>
-    {{ if .Error }}
-    <li><div>Error: <i>{{.Error}}</i></div></li>
-    {{ end }}
-    <li><pre>{{.Request}}</pre></li>
-</ul>
+<section>
+    <h2>Req {{if .Mode}}#{{.ReqNo}}{{end}}</h2>
+    <ul>
+        <li><div class="noCasing fixedFont">Time: <i>{{.Time}}</i></div></li>
+        <li><div class="noCasing fixedFont">Name: <i>{{.Name}}</i></div></li>
+        <li><div class="noCasing fixedFont">Host: <i>{{.Host}}</i></div></li>
+        <li><div class="noCasing fixedFont">Path: <i>{{.Path}}</i></div></li>
+        <li><div class="noCasing fixedFont">URI&nbsp;: <i>{{.URI}}</i></div></li>
+        <li><div class="noCasing fixedFont">IP&nbsp;&nbsp;: <i>{{.IP}}</i></div></li>
+    </ul>
+</section>
+
+<section>
+    <h2>Raw Request</h2>
+    <ul>
+        {{ if .Error }}
+        <li><div class="noCasing fixedFont">Error: <i>{{.Error}}</i></div></li>
+        {{ end }}
+        <li><pre class="noCasing fixedFont">{{.Request}}</pre></li>
+    </ul>
+</section>
 
 <!-- COPYRIGHT -->
-<hr/>
 <footer>
-    {{ if .DebugURL }}<a href="{{.DebugURL}}">debug info</a> | {{ end }}
-    <a href="https://github.com/gonyyi/reqtest">{{.ServiceVersion}}</a> |
-    <a href="https://gonyyi.com/copyright">copyright</a>
+    &copy; gon/y/yi 2021
+    <ul>
+        <li><a href="https://gonyyi.com/copyright">Copyright</a></li>
+        <li><a href="https://github.com/gonyyi/reqtest">{{.ServiceVersion}}</a></li>
+        {{ if .DebugURL }}<li><a href="{{.DebugURL}}">Debug Mode</a></li>{{ end }}
+    </ul>
 </footer>
 </body>
 </html>
