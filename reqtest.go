@@ -45,37 +45,51 @@ type Data struct {
 	Error          string
 	Request        string
 	DebugURL       string
+	ReqNo          int
+	ReqList        []string
 }
 
 func debugHandler(idx int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-
+		var reqList []string
 		currListSize := len(lastDataIndex.List()) // current list size.. it can be 0 to reqsKeep
+		for i := 0; i < currListSize; i++ {
+			reqList = append(reqList, strconv.Itoa(i))
+		}
+
+		// fmt.Printf("ReqList: %v\n", reqList)
 		if idx+1 > len(lastData) {
 			respTmpl.Execute(w, Data{
-				Mode: "::debug",
+				Mode:           "::debug",
 				ServiceName:    serviceName,
 				ServiceVersion: VERSION,
-				Error: "Index outside the range",
+				Error:          "Index outside the range",
+				ReqList:        reqList,
+				ReqNo:          idx,
 			})
 			return
 		}
 		if idx+1 > currListSize || currListSize == 0 {
 			respTmpl.Execute(w, Data{
-				Mode: "::debug",
+				Mode:           "::debug",
 				ServiceName:    serviceName,
 				ServiceVersion: VERSION,
-				Error: "No data",
+				Error:          "No data",
+				ReqList:        reqList,
+				ReqNo:          idx,
 			})
 			return
 		}
 
 		{
 			tmpData := lastData[lastDataIndex.Curr()-idx]
+			tmpData.Request = strings.TrimSpace(tmpData.Request)
 			tmpData.Mode = "::debug"
 			tmpData.DebugURL = ""
+			tmpData.ReqList = reqList
+			tmpData.ReqNo = idx
 			respTmpl.Execute(w, tmpData)
 		}
 	}
@@ -126,7 +140,6 @@ func Run(addr string, name string, reqsKeep int, ignoreURIs []string, customHand
 	lastData = make([]Data, reqsKeep)
 	lastDataIndex = common.NewRollingIndex(reqsKeep)
 
-
 	// IGNORE SOME URIs
 	ignores := make(map[string]struct{})
 	for _, v := range ignoreURIs {
@@ -149,19 +162,16 @@ func Run(addr string, name string, reqsKeep int, ignoreURIs []string, customHand
 	defaultHandler := newHandler("Default")
 
 	router := func(w http.ResponseWriter, r *http.Request) {
-		if idx := r.URL.Query().Get("reqtest"); idx != "" {
-			intIdx, _ := strconv.Atoi(idx)
-
-			debugHandler(intIdx)(w,r)
-
-			// if dstIdx := (len(idxList) - 1) - intIdx; dstIdx > -1 {
-			// 	debugHandler(idxList[dstIdx])(w, r)
-			// } else {
-			// 	debugHandler(-1)(w, r)
-			// }
-
-		} else if _, ok := ignores[r.URL.RequestURI()]; !ok {
-			// don't do anything for ignore URI lists
+		// if URL has a query key "reqtest" with a value, then it's a debug mode.
+		// if request URI is in ignoreURLs, do not respond
+		if idx, ok := r.URL.Query()["test"]; ok {
+			intIdx := 0
+			if len(idx) > 0 {
+				intIdx, _ = strconv.Atoi(idx[0])
+			}
+			debugHandler(intIdx)(w, r)
+		} else if _, ok := ignores[r.URL.RequestURI()]; !ok { // don't do anything for ignore URI lists
+			// see if customHandler is exist
 			url := strings.SplitN(r.Host, ":", 2)[0]
 			if h, ok := customHandler[url]; ok && h != nil {
 				h(w, r)
@@ -172,7 +182,7 @@ func Run(addr string, name string, reqsKeep int, ignoreURIs []string, customHand
 	}
 
 	http.HandleFunc("/", router)
-	println(VERSION + " / Copyright (c) 2021 Gon Yi <https://gonyyi.com/copyright>")
+	println(VERSION + " <https://gonyyi.com/copyright>")
 	println("Starting at <" + addr + ">")
 	return http.ListenAndServe(addr, nil)
 }
