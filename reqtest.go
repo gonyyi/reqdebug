@@ -47,9 +47,10 @@ type Data struct {
 	DebugURL       string
 	ReqNo          int
 	ReqList        []string
+	Param          string
 }
 
-func debugHandler(idx int) http.HandlerFunc {
+func debugHandler(idx int, param string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -68,6 +69,7 @@ func debugHandler(idx int) http.HandlerFunc {
 				Error:          "Index outside the range",
 				ReqList:        reqList,
 				ReqNo:          idx,
+				Param:          param,
 			})
 			return
 		}
@@ -79,6 +81,7 @@ func debugHandler(idx int) http.HandlerFunc {
 				Error:          "No data",
 				ReqList:        reqList,
 				ReqNo:          idx,
+				Param:          param,
 			})
 			return
 		}
@@ -90,12 +93,13 @@ func debugHandler(idx int) http.HandlerFunc {
 			tmpData.DebugURL = ""
 			tmpData.ReqList = reqList
 			tmpData.ReqNo = idx
+			tmpData.Param = param
 			respTmpl.Execute(w, tmpData)
 		}
 	}
 }
 
-func newHandler(name string) http.HandlerFunc {
+func newHandler(name string, param string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -119,7 +123,7 @@ func newHandler(name string) http.HandlerFunc {
 			if r.TLS == nil {
 				scheme = "http"
 			}
-			lastData[lastDataIndex.Curr()].DebugURL = scheme + "://" + r.Host + r.URL.Path + "?reqtest=0"
+			lastData[lastDataIndex.Curr()].DebugURL = scheme + "://" + r.Host + r.URL.Path + "?" + param + "=0"
 		}
 
 		reqOut, err := httputil.DumpRequest(r, true)
@@ -135,7 +139,12 @@ func newHandler(name string) http.HandlerFunc {
 	}
 }
 
-func Run(addr string, name string, reqsKeep int, ignoreURIs []string, customHandler map[string]http.HandlerFunc) (err error) {
+func Run(addr string, name string, param string, reqsKeep int, ignoreURIs []string, customHandler map[string]http.HandlerFunc) (err error) {
+	param = strings.TrimSpace(param)
+	if param == "" {
+		param = "q"
+	}
+
 	serviceName = name
 	lastData = make([]Data, reqsKeep)
 	lastDataIndex = common.NewRollingIndex(reqsKeep)
@@ -159,17 +168,17 @@ func Run(addr string, name string, reqsKeep int, ignoreURIs []string, customHand
 	if customHandler == nil {
 		customHandler = make(map[string]http.HandlerFunc)
 	}
-	defaultHandler := newHandler("Default")
+	defaultHandler := newHandler("Default", param)
 
 	router := func(w http.ResponseWriter, r *http.Request) {
 		// if URL has a query key "reqtest" with a value, then it's a debug mode.
 		// if request URI is in ignoreURLs, do not respond
-		if idx, ok := r.URL.Query()["test"]; ok {
+		if idx, ok := r.URL.Query()[param]; ok {
 			intIdx := 0
 			if len(idx) > 0 {
 				intIdx, _ = strconv.Atoi(idx[0])
 			}
-			debugHandler(intIdx)(w, r)
+			debugHandler(intIdx, param)(w, r)
 		} else if _, ok := ignores[r.URL.RequestURI()]; !ok { // don't do anything for ignore URI lists
 			// see if customHandler is exist
 			url := strings.SplitN(r.Host, ":", 2)[0]
