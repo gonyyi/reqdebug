@@ -128,7 +128,7 @@ func newHandler(name string) http.HandlerFunc {
 		} else {
 			lastData[lastDataIndex.Curr()].Error = ""
 		}
-		lastData[lastDataIndex.Curr()].Request = string(reqOut)
+		lastData[lastDataIndex.Curr()].Request = strings.TrimSpace(string(reqOut))
 		if err := respTmpl.Execute(w, lastData[lastDataIndex.Curr()]); err != nil {
 			println(err.Error())
 		}
