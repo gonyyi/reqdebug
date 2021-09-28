@@ -26,9 +26,9 @@
         <ul class="pipeList">
             {{range .ReqList}}
                 {{if eq . "0"}}
-            <li><a href="/?test={{.}}">Lastest</a></li>
+            <li><a href="/?{{$.Param}}={{.}}">Lastest</a></li>
                 {{else}}
-            <li><a href="/?test={{.}}">-{{.}}</a></li>
+            <li><a href="/?{{$.Param}}={{.}}">-{{.}}</a></li>
                 {{end}}
             {{end}}
         </ul>
