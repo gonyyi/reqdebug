@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Copyright (C) 2016-2021 Gon/Y/Yi -->
+<!-- Copyright (C) 2021 Gon/Y/Yi -->
 <head>
     <title>{{.ServiceName}}</title>
     <style>
@@ -26,9 +26,9 @@
         <ul class="pipeList">
             {{range .ReqList}}
                 {{if eq . "0"}}
-            <li><a href="/?{{$.Param}}={{.}}">Lastest</a></li>
+            <li><a href="{{$.DebugURL}}/{{.}}">Lastest</a></li>
                 {{else}}
-            <li><a href="/?{{$.Param}}={{.}}">-{{.}}</a></li>
+            <li><a href="{{$.DebugURL}}/{{.}}">-{{.}}</a></li>
                 {{end}}
             {{end}}
         </ul>
@@ -60,7 +60,7 @@
 
 <!-- COPYRIGHT -->
 <footer>
-    &copy; gon/y/yi 2021
+    &copy; gonyyi 2021
     <ul>
         <li><a href="https://gonyyi.com/copyright">Copyright</a></li>
         <li><a href="https://github.com/gonyyi/reqtest">{{.ServiceVersion}}</a></li>
