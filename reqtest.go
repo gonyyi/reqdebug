@@ -140,7 +140,6 @@ func (rt *reqTest) DebugHandler() http.HandlerFunc {
 		var idx int
 		// Get debug number..
 		if r.URL != nil && strings.HasPrefix(r.URL.Path, rt.debugURI) {
-			println(1, r.URL.Path)
 			tmp := strings.Split(strings.TrimPrefix(r.URL.Path, rt.debugURI), "/") // /debug/123/ --> ["", "123", ""] or ["123", ""] depend on debugURI is `/debug` or `/debug/`
 			for _, v := range tmp {
 				if v != "" {
