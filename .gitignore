@@ -1,0 +1,14 @@
+# Any folder or file that starts with underscore
+_*/
+_*
+# IntelliJ folder
+.idea/
+# Mac file
+.DS_Store
+# Swap files
+*.swp
+# Go test binary (`go test -c`)
+*.test
+# Go coverage output
+*.out
+*.iml
