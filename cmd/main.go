@@ -4,30 +4,48 @@
 package main
 
 import (
+	"flag"
+	"github.com/gonyyi/gosl"
 	"github.com/gonyyi/reqtest"
 	"net/http"
 )
 
+var (
+	ViewerAddr  = ":8089"
+	ServiceAddr = ":8080"
+	Name        = "ReqTest"
+	NoReqKeep   = 20
+	showVersion = false
+
+	buildDate = "2000-0101-0000"
+	buildNo   = "1"
+	Version   = gosl.Ver("ReqTest-CMD v1.3.0-" + buildNo)
+)
+
 func main() {
-	normal()
-}
+	flag.BoolVar(&showVersion, "version", showVersion, "show version")
+	flag.StringVar(&ViewerAddr, "v", ViewerAddr, "viewer addr")
+	flag.StringVar(&ServiceAddr, "s", ServiceAddr, "service addr")
+	flag.StringVar(&Name, "name", Name, "service name")
+	flag.IntVar(&NoReqKeep, "keep", NoReqKeep, "number of requests to keep")
+	flag.Parse()
 
-func simple() {
-	println("Starting " + reqtest.Version)
-	if err := reqtest.SimpleRun(":8080", ":8089"); err != nil {
-		println(err.Error())
+	if showVersion {
+		println(Version.String() + " (" + buildDate + ")")
+		return
 	}
-}
 
-func normal() {
-	rt := reqtest.New("t1", ":8089", 10, "/favicon.ico")
-	hello := func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("hello world test")) }
+	println("Starting " + Version)
 
-	println("ServiceAddr: <" + ":8080" + ">")
+	rt := reqtest.New(Name, ViewerAddr, NoReqKeep, "/favicon.ico")
+	println("ServiceAddr: <" + ServiceAddr + ">")
 	println("ViewerAddr:  <" + rt.ViewerURL() + ">")
 
-	http.HandleFunc("/test/", rt.TraceWrapper(hello)) // TraceWrapper takes a handler function and run trace
-	http.HandleFunc("/debug/", rt.ViewHandler())      // ViewHandler shows all requests
-	http.HandleFunc("/", rt.DefaultHandler())         // DefaultHandler returns debug info of the request -eg. for web browser
-	http.ListenAndServe(":8080", nil)
+	hello := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		w.Write([]byte(Version.String() + ":OK"))
+	}
+
+	http.HandleFunc("/", rt.TraceWrapper(hello))
+	http.ListenAndServe(ServiceAddr, nil)
 }
