@@ -135,6 +135,22 @@ func (rt *reqtest) viewHandler(idx int) http.HandlerFunc {
 			reqList = append(reqList, strconv.Itoa(i))
 		}
 
+		if gosl.HasPrefix(r.Header.Get("User-Agent"), "curl") {
+			if idx+1 > len(rt.lastData) {
+				w.WriteHeader(400)
+				w.Write([]byte("Index outside the range\n"))
+				return
+			}
+			if idx+1 > currListSize || currListSize == 0 {
+				w.WriteHeader(404)
+				w.Write([]byte("No data\n"))
+				return
+			}
+			w.WriteHeader(200)
+			w.Write([]byte(strings.TrimSpace(rt.lastData[rt.lastDataIndex.Curr()-idx].Request)+"\n"))
+			return
+		}
+
 		// fmt.Printf("ReqList: %v\n", reqList)
 		if idx+1 > len(rt.lastData) {
 			rt.respTmpl.Execute(w, data{
