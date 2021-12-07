@@ -4,7 +4,7 @@
 <head>
     <title>{{.ServiceName}}</title>
     <style>
-        /* (c) Gon Y. Yi 2016-2021 <https://gonyyi.com/copyright> */ html{font-size:5px;padding:0;margin:0}body{background:#fff;padding:0;margin:0;font-family:Georgia,Times,"Times New Roman",serif,Helvetica,Arial,sans-serif;font-size:4rem;color:#333;word-wrap:break-word;hyphens:auto;text-transform:lowercase;}footer,header,section{margin:0 3rem;max-width:200rem}header{padding:4rem 0 2rem 0;border-bottom:1px solid #ccc;font-size:3rem}header>h1>a{color:#333}section{padding:1rem 0 2rem 0;text-transform:lowercase}section>div,section>p,section>ul{margin:1rem 0 0 4rem;padding:0 0 0 2rem;border-left:1rem solid #ddd;font-size:4rem}section>p{padding-bottom:1rem;padding-top:1rem}section>ul>li{list-style-type:none;padding:1rem 0}footer{padding:2rem 0 4rem 0;border-top:1px solid #ccc;font-size:3rem;margin-bottom:3rem;padding-bottom:3rem}footer>div{font-size:2rem;margin-top:1rem;color:transparent}footer>ul,header>ul{display:inline-block;list-style-type:none;margin:1rem 0;padding:0;font-size:3rem}ul li{color:#888}footer>ul>li,header>ul>li{display:inline-block}header>ul>li:before{content:" / "}footer>ul>li:before{content:" | "}small{padding:0;margin:0;display:block;font-size:3rem;color:#888}div>small,p>small,ul>small{padding-left:5rem}a{text-decoration:none;color:#06f;padding:0;outline:0}a:active{color:#f51}a:focus,a:hover{color:#f60}a.bad{text-decoration:line-through}a i{color:#888;padding-left:1rem;font-size:3rem;}a>div>small{display:inline;font-size:inherit;padding-left:2rem}h1,h2,h3{margin:0;padding:1rem 0}h1{font-size:8rem}h2{font-size:7rem;font-weight:lighter}h3{font-size:6rem;font-weight:lighter}hr{margin-top:3rem;height:0;border-width:0;border-top:1px solid #999}i{color:#888}pre{display:block;background-color:#eee;border-radius:1rem;padding:1rem 1rem;font-size:3rem;color:#555;white-space:pre-wrap}button,input{border-radius:1rem;border:.5rem solid #69e;font-size:3rem;padding:1rem;margin:1rem 0;outline:0}input{background-color:#fff;color:#69e}button{background-color:#69e;color:#fff}input:hover{border-color:#69e;background-color:#69e;color:#fff}button:hover{border-color:#17f;background-color:#17f;color:#fff}button:active,button:focus,input:active,input:focus{border-color:#17f;background-color:#17f;color:#fff;caret-color:#fff;}input:active::placeholder,input:focus::placeholder,input:hover::placeholder{color:#fff;opacity:1}:-ms-input-placeholder{color:#69e}::-ms-input-placeholder{color:#69e}::placeholder{color:#69e;opacity:1}label{font-size:3rem}.width20{width:20rem}.width40{width:40rem}.width100{width:100rem}.altFont{font-family:sans-serif}.indent{margin-left:7rem}.noCasing{text-transform:none}.upper{text-transform:uppercase}.lower{text-transform:lowercase}.init,.init *,.init ::after,.init ::before,.init :active,.init :focus,.init :hover{all:initial}
+        /* (c) Gon Y. Yi 2016-2021 <https://gonyyi.com/copyright> */ html{font-size:5px;padding:0;margin:0}body{background:#fff;padding:0;margin:0;font-family:Georgia,Times,"Times New Roman",serif,Helvetica,Arial,sans-serif;font-size:4rem;color:#333;word-wrap:break-word;hyphens:auto;}footer,header,section{margin:0 3rem;max-width:200rem}header{padding:4rem 0 2rem 0;border-bottom:1px solid #ccc;font-size:3rem}header>h1>a{color:#333}section{padding:1rem 0 2rem 0;}section>div,section>p,section>ul{margin:1rem 0 0 4rem;padding:0 0 0 2rem;border-left:1rem solid #ddd;font-size:4rem}section>p{padding-bottom:1rem;padding-top:1rem}section>ul>li{list-style-type:none;padding:1rem 0}footer{padding:2rem 0 4rem 0;border-top:1px solid #ccc;font-size:3rem;margin-bottom:3rem;padding-bottom:3rem}footer>div{font-size:2rem;margin-top:1rem;color:transparent}footer>ul,header>ul{display:inline-block;list-style-type:none;margin:1rem 0;padding:0;font-size:3rem}ul li{color:#888}footer>ul>li,header>ul>li{display:inline-block}header>ul>li:before{content:" / "}footer>ul>li:before{content:" | "}small{padding:0;margin:0;display:block;font-size:3rem;color:#888}div>small,p>small,ul>small{padding-left:5rem}a{text-decoration:none;color:#06f;padding:0;outline:0}a:active{color:#f51}a:focus,a:hover{color:#f60}a.bad{text-decoration:line-through}a i{color:#888;padding-left:1rem;font-size:3rem;}a>div>small{display:inline;font-size:inherit;padding-left:2rem}h1,h2,h3{margin:0;padding:1rem 0}h1{font-size:8rem}h2{font-size:7rem;font-weight:lighter}h3{font-size:6rem;font-weight:lighter}hr{margin-top:3rem;height:0;border-width:0;border-top:1px solid #999}i{color:#888}pre{display:block;background-color:#eee;border-radius:1rem;padding:1rem 1rem;font-size:3rem;color:#555;white-space:pre-wrap}button,input{border-radius:1rem;border:.5rem solid #69e;font-size:3rem;padding:1rem;margin:1rem 0;outline:0}input{background-color:#fff;color:#69e}button{background-color:#69e;color:#fff}input:hover{border-color:#69e;background-color:#69e;color:#fff}button:hover{border-color:#17f;background-color:#17f;color:#fff}button:active,button:focus,input:active,input:focus{border-color:#17f;background-color:#17f;color:#fff;caret-color:#fff;}input:active::placeholder,input:focus::placeholder,input:hover::placeholder{color:#fff;opacity:1}:-ms-input-placeholder{color:#69e}::-ms-input-placeholder{color:#69e}::placeholder{color:#69e;opacity:1}label{font-size:3rem}.width20{width:20rem}.width40{width:40rem}.width100{width:100rem}.altFont{font-family:sans-serif}.indent{margin-left:7rem}.noCasing{text-transform:none}.upper{text-transform:uppercase}.lower{text-transform:lowercase}.init,.init *,.init ::after,.init ::before,.init :active,.init :focus,.init :hover{all:initial}
         .fixedFont{font-family:monospace}
         ul.pipeList, ul.slashList {display: inline-block; list-style-type: none; margin: 1rem 0; padding: 0; font-size: 3rem;}
         ul.pipeList>li, ul.slashList>li {display: inline-block;}
@@ -22,13 +22,13 @@
     <h1>{{.ServiceName}}<i>{{.Mode}}</i></h1>
     {{if .Mode}}
     <small>
-        Requests
+        TotalReq {{$.TotalReq}}
         <ul class="pipeList">
             {{range .ReqList}}
                 {{if eq . "0"}}
-            <li><a href="{{$.DebugURL}}/{{.}}">Lastest</a></li>
+            <li><a href="{{$.ViewerURL}}/{{.}}">Lastest</a></li>
                 {{else}}
-            <li><a href="{{$.DebugURL}}/{{.}}">-{{.}}</a></li>
+            <li><a href="{{$.ViewerURL}}/{{.}}">-{{.}}</a></li>
                 {{end}}
             {{end}}
         </ul>
@@ -64,7 +64,7 @@
     <ul>
         <li><a href="https://gonyyi.com/copyright">Copyright</a></li>
         <li><a href="https://github.com/gonyyi/reqtest">{{.ServiceVersion}}</a></li>
-        {{ if .DebugURL }}<li><a href="{{.DebugURL}}">Debug Mode</a></li>{{ end }}
+        {{ if .ViewerURL }}<li><a href="{{.ViewerURL}}">View Mode</a></li>{{ end }}
     </ul>
 </footer>
 </body>
