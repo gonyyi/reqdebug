@@ -1,25 +1,24 @@
-// (c) Gon Y. Yi 2021 <https://gonyyi.com/copyright>
-// Last Update: 12/07/2021
+// (c) Gon Y. Yi 2021-2022 <https://gonyyi.com/copyright>
+// Last Update: 01/15/2022
 
 package main
 
 import (
 	"flag"
-	"github.com/gonyyi/gosl"
 	"github.com/gonyyi/reqtest"
 	"net/http"
 )
 
 var (
-	ViewerAddr  = ":8089"
-	ServiceAddr = ":8080"
-	Name        = "ReqTest"
+	ViewerAddr  = ":8080"
+	ServiceAddr = ":80"
+	Name        = "gonyyi.int"
 	NoReqKeep   = 20
 	showVersion = false
 
 	buildDate = "2000-0101-0000"
 	buildNo   = "1"
-	Version   = gosl.Ver("ReqTest-CMD v1.3.0-" + buildNo)
+	Version   = "gonyyi.int v1.3.1-" + buildNo
 )
 
 func main() {
@@ -31,7 +30,7 @@ func main() {
 	flag.Parse()
 
 	if showVersion {
-		println(Version.String() + " (" + buildDate + ")")
+		println(Version + " (" + buildDate + ")")
 		return
 	}
 
@@ -41,11 +40,7 @@ func main() {
 	println("ServiceAddr: <" + ServiceAddr + ">")
 	println("ViewerAddr:  <" + rt.ViewerURL() + ">")
 
-	hello := func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-		w.Write([]byte(Version.String() + ":OK"))
-	}
+	http.HandleFunc("/", rt.TraceWrapper(helloHandler(nil)))
 
-	http.HandleFunc("/", rt.TraceWrapper(hello))
 	http.ListenAndServe(ServiceAddr, nil)
 }

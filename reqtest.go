@@ -1,11 +1,10 @@
-// (c) Gon Y. Yi 2021 <https://gonyyi.com/copyright>
-// Last Update: 12/07/2021
+// (c) Gon Y. Yi 2021-2022 <https://gonyyi.com/copyright>
+// Last Update: 01/15/2022
 
 package reqtest
 
 import (
 	"embed"
-	"github.com/gonyyi/gosl"
 	"html/template"
 	"net/http"
 	"net/http/httputil"
@@ -14,7 +13,7 @@ import (
 	"time"
 )
 
-const Version gosl.Ver = "ReqTest v1.3.0"
+const Version string = "ReqTest v1.3.1"
 
 var (
 	//go:embed template.html
@@ -64,7 +63,8 @@ func New(name string, viewerAddr string, reqsKeep int, ignoreURIs ...string) (rt
 	// CREATE rt.viewerAddrFull
 	// If the viewerAddr starts with :, then append localhost
 	// Note that rt.viewerAddrFull WAS ":8080", but NOW it's like "http://1.2.3.4:8080"
-	if gosl.HasPrefix(rt.viewerAddr, ":") {
+
+	if strings.HasPrefix(rt.viewerAddr, ":") {
 		rt.viewerAddrFull = "http://" + getOutboundIP() + rt.viewerAddr
 	} else {
 		rt.viewerAddrFull = "http://" + rt.viewerAddr
@@ -134,8 +134,8 @@ func (rt *reqtest) viewHandler(idx int) http.HandlerFunc {
 		for i := 0; i < currListSize; i++ {
 			reqList = append(reqList, strconv.Itoa(i))
 		}
-
-		if gosl.HasPrefix(r.Header.Get("User-Agent"), "curl") {
+		if strings.HasPrefix(r.Header.Get("User-Agent"), "curl") {
+			//if gosl.HasPrefix(r.Header.Get("User-Agent"), "curl") {
 			if idx+1 > len(rt.lastData) {
 				w.WriteHeader(400)
 				w.Write([]byte("Index outside the range\n"))
@@ -147,7 +147,7 @@ func (rt *reqtest) viewHandler(idx int) http.HandlerFunc {
 				return
 			}
 			w.WriteHeader(200)
-			w.Write([]byte(strings.TrimSpace(rt.lastData[rt.lastDataIndex.Curr()-idx].Request)+"\n"))
+			w.Write([]byte(strings.TrimSpace(rt.lastData[rt.lastDataIndex.Curr()-idx].Request) + "\n"))
 			return
 		}
 
@@ -156,7 +156,7 @@ func (rt *reqtest) viewHandler(idx int) http.HandlerFunc {
 			rt.respTmpl.Execute(w, data{
 				Mode:           "::view",
 				ServiceName:    rt.serviceName,
-				ServiceVersion: Version.String(),
+				ServiceVersion: Version,
 				Error:          "Index outside the range",
 				ReqList:        reqList,
 				ReqNo:          idx,
@@ -169,7 +169,7 @@ func (rt *reqtest) viewHandler(idx int) http.HandlerFunc {
 			rt.respTmpl.Execute(w, data{
 				Mode:           "::view",
 				ServiceName:    rt.serviceName,
-				ServiceVersion: Version.String(),
+				ServiceVersion: Version,
 				Error:          "No data",
 				ReqList:        reqList,
 				ReqNo:          idx,
@@ -199,10 +199,12 @@ func (rt *reqtest) ViewHandler() http.HandlerFunc {
 		// Get debug number..
 		if r.URL != nil {
 			// if URL exist, get the first number
-			tmp := gosl.Split(nil, r.URL.Path, '/') // for /debug/123/ => ["123"]
+			tmp := strings.Split(r.URL.Path, "/")
+			//tmp := gosl.Split(nil, r.URL.Path, '/') // for /debug/123/ => ["123"]
 			for _, v := range tmp {
 				if v != "" {
-					idx = gosl.MustAtoi(v, 0)
+					idx, _ = strconv.Atoi(v)
+					//idx = gosl.MustAtoi(v, 0)
 					break
 				}
 			}
@@ -218,7 +220,7 @@ func (rt *reqtest) tracer(name string, r *http.Request) (curr int) {
 	curr = rt.lastDataIndex.Curr()
 	rt.lastData[curr] = data{
 		ServiceName:    rt.serviceName,
-		ServiceVersion: Version.String(),
+		ServiceVersion: Version,
 		Mode:           "",
 		Time:           time.Now().Format("2006/01/02 15:04:05.000"),
 		Name:           name,
